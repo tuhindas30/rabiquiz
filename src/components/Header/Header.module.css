@@ -1,0 +1,35 @@
+.heading {
+  font-size: 1.8rem;
+  padding: 1rem 5rem;
+  text-align: center;
+  justify-content: center;
+  color: var(--rq-amber);
+}
+
+.headingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.subHeading {
+  padding: 0.5rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.headerButton {
+  margin: 1rem 0;
+  font-size: 1.1rem !important;
+}
+
+@media screen and (min-width: 768px) {
+  .header {
+    margin: 10rem 0;
+  }
+
+  .heading {
+    font-size: 2rem;
+  }
+}

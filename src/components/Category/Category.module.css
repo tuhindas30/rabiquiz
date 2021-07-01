@@ -1,0 +1,21 @@
+.imageContainer {
+  position: relative;
+  margin: 2rem auto;
+  transition: 0.5s;
+  cursor: pointer;
+}
+
+.imageContainer:hover {
+  transform: scale(1.1);
+}
+
+.image {
+  width: 20rem;
+  height: 20rem;
+}
+
+@media screen and (min-width: 768px) {
+  .imageContainer {
+    margin: 0;
+  }
+}
