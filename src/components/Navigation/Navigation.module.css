@@ -1,0 +1,10 @@
+.navigation {
+  border-bottom: 0.1rem solid var(--rq-light-gray);
+  background-color: var(--white);
+}
+
+.navBrand {
+  font-size: 2rem !important;
+  font-weight: 700;
+  color: var(--rq-amber) !important;
+}

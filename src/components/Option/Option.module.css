@@ -1,0 +1,39 @@
+.optionButton {
+  padding: 1rem !important;
+  margin: 1rem 0;
+  color: var(--rq-black) !important;
+  font-weight: bold !important;
+  font-size: 1.1rem !important;
+  width: 100%;
+}
+
+.defaultOptionStyle {
+  border-color: var(--rq-amber) !important;
+  background-color: var(--rq-light-gray) !important;
+}
+
+.correctOptionStyle {
+  border-color: var(--rq-green) !important;
+  background-color: var(--rq-green) !important;
+}
+
+.inCorrectOptionStyle {
+  color: var(--white) !important;
+  border-color: var(--rq-orange) !important;
+  background-color: var(--rq-orange) !important;
+}
+
+.notAllowed {
+  cursor: not-allowed !important;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px) {
+  .optionButton {
+    width: 50% !important;
+    margin: auto;
+  }
+}
