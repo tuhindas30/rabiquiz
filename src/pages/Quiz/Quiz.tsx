@@ -4,11 +4,11 @@ import { Container, Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { OptionItem } from "../../types/quiz.types";
 import { useQuiz } from "../../contexts/QuizProvider";
-import { ReactComponent as EmptyQuizImage } from "./EmptyQuizImage.svg";
-import { ReactComponent as CheckmarkImage } from "./CheckmarkImage.svg";
 import Option from "../../components/Option/Option";
-import Navigation from "../../components/Navigation/Navigation";
 import showToast from "../../utils/showToast";
+import { ReactComponent as Loader } from "../../assets/images/Loader.svg";
+import { ReactComponent as EmptyQuizImage } from "../../assets/images/EmptyQuizImage.svg";
+import { ReactComponent as CheckmarkImage } from "../../assets/images/CheckmarkImage.svg";
 import styles from "./Quiz.module.css";
 
 const Quiz = () => {
@@ -98,92 +98,83 @@ const Quiz = () => {
   };
 
   if (loading) {
-    return <h1 className={styles.overlay}>Loading ...</h1>;
+    return (
+      <Container className={styles.header} style={{ height: "88vh" }}>
+        <Loader />
+      </Container>
+    );
   }
 
-  if (questions.length === 0 || options.length === 0) {
+  if (
+    questions.length === 0 ||
+    options.length === 0 ||
+    totalQuizQuestions === 0
+  ) {
     return (
-      <>
-        <Navigation />
-        <div className={styles.emptyQuizContainer}>
-          <EmptyQuizImage width="80%" />
-          <p className={styles.message}>
-            Missing quiz data! Try refreshing the page :)
-          </p>
-        </div>
-      </>
+      <div className={styles.emptyQuizContainer}>
+        <EmptyQuizImage width="80%" />
+        <p className={styles.message}>
+          Missing quiz data! Try refreshing the page :)
+        </p>
+      </div>
     );
   }
 
   if (currentQuestionNumber <= totalQuizQuestions) {
     return (
-      <>
-        <Navigation />
-        <Container className={styles.container}>
-          <ToastContainer />
-          <div className={styles.header}>
-            <div>
-              Question: {currentQuestionNumber}/{totalQuizQuestions}
-            </div>
-            <div>Timer: {counter}/30</div>
+      <Container className={styles.container}>
+        <ToastContainer />
+        <div className={styles.header}>
+          <div>
+            Question: {currentQuestionNumber}/{totalQuizQuestions}
           </div>
-          <div className={styles.question}>{currentQuestion?.label}</div>
-          <div className={styles.optionContainer}>
-            {currentOptions?.options.map((option) => (
-              <Option
-                key={option._id}
-                option={option}
-                onOptionClick={() =>
-                  handleOptionClick({
-                    currentQuestionNumber,
-                    correctOption,
-                    points: currentQuestion.points,
-                    option,
-                  })
-                }
-              />
-            ))}
-          </div>
-          <div className={styles.buttonContainer}>
-            {currentQuestionNumber === totalQuizQuestions ? (
-              <Button
-                onClick={() => changeQuestion(currentQuestionNumber)}
-                className="button">
-                View Score
-              </Button>
-            ) : (
-              <Button
-                onClick={() => changeQuestion(currentQuestionNumber)}
-                className="button">
-                Skip
-              </Button>
-            )}
-          </div>
-        </Container>
-      </>
+          <div>Timer: {counter}/30</div>
+        </div>
+        <div className={styles.question}>{currentQuestion?.label}</div>
+        <div className={styles.optionContainer}>
+          {currentOptions?.options.map((option) => (
+            <Option
+              key={option._id}
+              option={option}
+              onOptionClick={() =>
+                handleOptionClick({
+                  currentQuestionNumber,
+                  correctOption,
+                  points: currentQuestion.points,
+                  option,
+                })
+              }
+            />
+          ))}
+        </div>
+        <div className={styles.buttonContainer}>
+          <Button
+            onClick={() => changeQuestion(currentQuestionNumber)}
+            className="button">
+            {currentQuestionNumber === totalQuizQuestions
+              ? "View Score"
+              : "Skip"}
+          </Button>
+        </div>
+      </Container>
     );
   }
 
   return (
-    <>
-      <Navigation />
-      <Container className={`${styles.container} ${styles.scoreContainer}`}>
-        <CheckmarkImage className={styles.checkmark} />
-        <div className={styles.score}>Score: {score}</div>
-        <div className={styles.scoreButtonContainer}>
-          <Link to="/">
-            <Button className={`button ${styles.button}`}>
-              Return to Home
-            </Button>
-          </Link>
-          <Button
-            onClick={handlePlayAgainButton}
-            className={`button ${styles.button}`}>
-            Play again
-          </Button>
-        </div>
-      </Container>
-    </>
+    <Container className={`${styles.container} ${styles.scoreContainer}`}>
+      <CheckmarkImage className={styles.checkmark} />
+      <div className={styles.score}>Score: {score}</div>
+      <div className={styles.scoreButtonContainer}>
+        <Link to="/">
+          <Button className={`button ${styles.button}`}>Return to Home</Button>
+        </Link>
+        <Button
+          onClick={handlePlayAgainButton}
+          className={`button ${styles.button}`}>
+          Play again
+        </Button>
+      </div>
+    </Container>
   );
 };
 

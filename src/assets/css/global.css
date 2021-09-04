@@ -49,3 +49,7 @@ body {
   border-color: var(--rq-amber) !important;
   background-color: var(--rq-amber) !important;
 }
+
+.modal {
+  padding-left: 0 !important;
+}
