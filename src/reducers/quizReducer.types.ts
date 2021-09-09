@@ -1,15 +1,20 @@
-import { Option, CategoryItem, Question } from "../types/quiz.types";
+import { CategoryItem, Quiz, UserAnswers } from "../types/quiz.types";
 
 export type InitialState = {
   categories: CategoryItem[];
-  questions: Question[];
-  options: Option[];
+  quizzes: Quiz[];
+  selectedOptions: UserAnswers;
   loading: boolean;
-  questionId: string;
-  score: number;
+  questionId: string | undefined;
   counter: number;
   isOptionDisabled: boolean;
   currentQuestionNumber: number;
+};
+
+export type StoreUserAnswersProps = {
+  categoryId: string;
+  questionId: string | undefined;
+  answerId: string | undefined;
 };
 
 export type QuizActionType =
@@ -18,23 +23,22 @@ export type QuizActionType =
       payload: { categories: CategoryItem[] };
     }
   | {
-      type: "INITIALIZE_QUESTIONS";
-      payload: { questions: Question[] };
-    }
-  | {
-      type: "INITIALIZE_OPTIONS";
-      payload: { options: Option[] };
+      type: "INITIALIZE_QUIZ";
+      payload: { quizzes: Quiz[] };
     }
   | {
       type: "SET_LOADING";
     }
   | {
       type: "SET_QUESTION_ID";
-      payload: { id: string };
+      payload: { id: string | undefined };
     }
   | {
-      type: "INCREASE_SCORE";
-      payload: { score: number };
+      type: "SET_SELECTED_OPTION";
+      payload: StoreUserAnswersProps;
+    }
+  | {
+      type: "CLEAR_SELECTED_OPTION";
     }
   | {
       type: "CHANGE_QUESTION";

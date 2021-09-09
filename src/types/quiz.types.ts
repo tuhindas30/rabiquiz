@@ -11,29 +11,40 @@ export type CategoryItem = {
   rules: RuleItem[];
 };
 
-export type QuestionItem = {
-  _id: string;
-  label: string;
-  points: number;
-};
-
 export type OptionItem = {
-  _id: string;
+  _id?: string;
   label: string;
-  isCorrect: boolean;
 };
 
-export type Question = {
-  category: string;
-  questions: QuestionItem[];
-};
-
-export type OptionArray = {
+export type QuizItem = {
+  _id?: string;
   question: string;
   options: OptionItem[];
 };
 
-export type Option = {
+export type AnswerItem = {
+  _id?: string;
+  question: string;
+  answer: string;
+  points: number;
+};
+
+export type Quiz = {
   category: string;
-  items: OptionArray[];
+  quiz: QuizItem[];
+};
+
+export type Answer = {
+  category: string;
+  quiz: AnswerItem[];
+};
+
+export type SelectedOption = {
+  questionId: string | undefined;
+  optionId: string | undefined;
+};
+
+export type UserAnswers = {
+  categoryId: string;
+  answers: SelectedOption[];
 };
