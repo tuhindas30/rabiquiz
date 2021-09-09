@@ -4,6 +4,7 @@ import { useQuiz } from "../../contexts/QuizProvider";
 import Header from "../../components/Header/Header";
 import Category from "../../components/Category/Category";
 import QuizModal from "../../components/Modal";
+import Navigation from "../../components/Navigation/Navigation";
 import { ReactComponent as Loader } from "../../assets/images/Loader.svg";
 import { ReactComponent as EmptyQuizImage } from "../../assets/images/EmptyQuizImage.svg";
 import styles from "./Home.module.css";
@@ -43,6 +44,7 @@ const Home = () => {
 
   return (
     <>
+      <Navigation />
       <Container
         style={{
           marginTop: "5rem",
