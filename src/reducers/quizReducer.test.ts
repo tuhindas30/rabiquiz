@@ -30,25 +30,27 @@ describe("testing quiz reducer", () => {
           rules: [],
         },
       ],
-      questions: [],
-      options: [],
+      quizzes: [],
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       questionId: "",
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
     });
   });
 
-  test("should initialize questions received from the server in the state", () => {
+  test("should initialize quizzes received from the server in the state", () => {
     const action: QuizActionType = {
-      type: "INITIALIZE_QUESTIONS",
+      type: "INITIALIZE_QUIZ",
       payload: {
-        questions: [
+        quizzes: [
           {
             category: "Category 1",
-            questions: [],
+            quiz: [],
           },
         ],
       },
@@ -57,50 +59,19 @@ describe("testing quiz reducer", () => {
     const state = quizReducer(initialState, action);
 
     expect(state).toEqual({
-      questions: [
+      quizzes: [
         {
           category: "Category 1",
-          questions: [],
+          quiz: [],
         },
       ],
       categories: [],
-      options: [],
-      loading: false,
-      questionId: "",
-      score: 0,
-      counter: 30,
-      isOptionDisabled: false,
-      currentQuestionNumber: 1,
-    });
-  });
-
-  test("should initialize options received from the server in the state", () => {
-    const action: QuizActionType = {
-      type: "INITIALIZE_OPTIONS",
-      payload: {
-        options: [
-          {
-            category: "Category 1",
-            items: [],
-          },
-        ],
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
       },
-    };
-
-    const state = quizReducer(initialState, action);
-
-    expect(state).toEqual({
-      options: [
-        {
-          category: "Category 1",
-          items: [],
-        },
-      ],
-      questions: [],
-      categories: [],
       loading: false,
       questionId: "",
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
@@ -115,12 +86,14 @@ describe("testing quiz reducer", () => {
     const state = quizReducer(initialState, action);
 
     expect(state).toEqual({
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: true,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
@@ -129,12 +102,14 @@ describe("testing quiz reducer", () => {
     const nextState = quizReducer(state, action);
 
     expect(nextState).toEqual({
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
@@ -153,47 +128,66 @@ describe("testing quiz reducer", () => {
 
     expect(state).toEqual({
       questionId: "1",
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
     });
   });
 
-  test("should increase score if option is correct", () => {
+  test("should set selected option by the user", () => {
     const action: QuizActionType = {
-      type: "INCREASE_SCORE",
+      type: "SET_SELECTED_OPTION",
       payload: {
-        score: 5,
+        categoryId: "12345",
+        answerId: "1234",
+        questionId: "123",
       },
     };
 
     const state = quizReducer(initialState, action);
 
     expect(state).toEqual({
-      score: 5,
-      questions: [],
-      options: [],
-      categories: [],
       questionId: "",
+      quizzes: [],
+      categories: [],
+      selectedOptions: {
+        categoryId: "12345",
+        answers: [
+          {
+            optionId: "1234",
+            questionId: "123",
+          },
+        ],
+      },
       loading: false,
       counter: 30,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
     });
+  });
 
-    const nextState = quizReducer(state, action);
+  test("should clear selected options by the user", () => {
+    const action: QuizActionType = {
+      type: "CLEAR_SELECTED_OPTION",
+    };
 
-    expect(nextState).toEqual({
-      score: 10,
-      questions: [],
-      options: [],
-      categories: [],
+    const state = quizReducer(initialState, action);
+
+    expect(state).toEqual({
       questionId: "",
+      quizzes: [],
+      categories: [],
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       counter: 30,
       isOptionDisabled: false,
@@ -213,13 +207,15 @@ describe("testing quiz reducer", () => {
 
     expect(state).toEqual({
       currentQuestionNumber: 3,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
       counter: 30,
       isOptionDisabled: false,
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
     });
   });
@@ -233,12 +229,14 @@ describe("testing quiz reducer", () => {
 
     expect(state).toEqual({
       isOptionDisabled: true,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
       counter: 30,
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       currentQuestionNumber: 1,
     });
@@ -247,12 +245,14 @@ describe("testing quiz reducer", () => {
 
     expect(nextState).toEqual({
       isOptionDisabled: false,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
       counter: 30,
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       currentQuestionNumber: 1,
     });
@@ -267,11 +267,13 @@ describe("testing quiz reducer", () => {
 
     expect(state).toEqual({
       counter: 29,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
@@ -287,18 +289,20 @@ describe("testing quiz reducer", () => {
 
     expect(state).toEqual({
       counter: 30,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
-      score: 0,
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       isOptionDisabled: false,
       currentQuestionNumber: 1,
     });
   });
 
-  test("should reset the quiz score and current question number", () => {
+  test("should reset the current question number", () => {
     const action: QuizActionType = {
       type: "RESET",
     };
@@ -306,12 +310,14 @@ describe("testing quiz reducer", () => {
     const state = quizReducer(initialState, action);
 
     expect(state).toEqual({
-      score: 0,
       currentQuestionNumber: 1,
-      questions: [],
-      options: [],
+      quizzes: [],
       categories: [],
       questionId: "",
+      selectedOptions: {
+        categoryId: "",
+        answers: [],
+      },
       loading: false,
       counter: 30,
       isOptionDisabled: false,
