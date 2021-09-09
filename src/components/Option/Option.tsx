@@ -18,9 +18,9 @@ const Option = ({ option, onOptionClick }: OptionParams) => {
     onOptionClick(option);
   };
 
-  const renderAnswerStyle = (isOptionSelected: boolean, option: OptionItem) => {
+  const renderAnswerStyle = (isOptionSelected: boolean) => {
     if (!isOptionSelected) return "defaultOptionStyle";
-    return option.isCorrect ? "correctOptionStyle" : "inCorrectOptionStyle";
+    return "selectedOptionStyle";
   };
 
   return (
@@ -28,7 +28,7 @@ const Option = ({ option, onOptionClick }: OptionParams) => {
       block
       onClick={() => handleOptionStyle(option)}
       className={`${styles.optionButton} ${
-        styles[renderAnswerStyle(isOptionSelected, option)]
+        styles[renderAnswerStyle(isOptionSelected)]
       } ${isOptionDisabled ? styles.notAllowed : styles.pointer}`}
       disabled={isOptionDisabled}>
       {option.label}

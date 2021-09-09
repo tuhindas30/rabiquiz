@@ -1,18 +1,25 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useLocation } from "react-router-dom";
-import { InitialState } from "../reducers/quizReducer.types";
+import {
+  InitialState,
+  StoreUserAnswersProps,
+} from "../reducers/quizReducer.types";
+import { UserAnswers } from "../types/quiz.types";
 import * as categoryApi from "../api/category/category";
-import * as questionApi from "../api/question/question";
-import * as answerApi from "../api/option/option";
+import * as quizApi from "../api/quiz/quiz";
 import quizReducer from "../reducers/quizReducer";
+import { ServerResponse, verifyAnswers } from "../api/answer/answer";
+import showToast from "../utils/showToast";
 
 export const initialState: InitialState = {
   categories: [],
-  questions: [],
-  options: [],
+  quizzes: [],
+  selectedOptions: {
+    categoryId: "",
+    answers: [],
+  },
   loading: false,
   questionId: "",
-  score: 0,
   counter: 30,
   isOptionDisabled: false,
   currentQuestionNumber: 1,
@@ -20,13 +27,17 @@ export const initialState: InitialState = {
 
 type QuizContextType = {
   quizState: typeof initialState;
-  increaseScore: (points: number) => void;
+  storeUserAnswers: (answerObj: StoreUserAnswersProps) => void;
   changeQuestionOnOptionClick: (currentQuestionNumber: number) => void;
   changeQuestion: (currentQuestionNumber: number) => void;
   triggerCountDown: () => void;
   resetQuiz: () => void;
   resetCountDown: () => void;
-  setQuestionId: (questionId: string) => void;
+  setQuestionId: (questionId: string | undefined) => void;
+  verifyUserAnswers: (
+    ansObj: UserAnswers
+  ) => Promise<ServerResponse | { errMessage: string } | undefined>;
+  clearUserAnswers: () => void;
 };
 
 const QuizContext = createContext({} as QuizContextType);
@@ -66,17 +77,17 @@ const QuizProvider = ({ children }: React.PropsWithChildren<{}>) => {
     (async () => {
       try {
         quizDispatch({ type: "SET_LOADING" });
-        const response = await questionApi.getAllQuestions();
+        const response = await quizApi.getAllQuiz();
         if ("data" in response) {
           quizDispatch({
-            type: "INITIALIZE_QUESTIONS",
-            payload: { questions: response.data },
+            type: "INITIALIZE_QUIZ",
+            payload: { quizzes: response.data },
           });
         }
       } catch (err) {
         quizDispatch({
-          type: "INITIALIZE_QUESTIONS",
-          payload: { questions: [] },
+          type: "INITIALIZE_QUIZ",
+          payload: { quizzes: [] },
         });
       } finally {
         quizDispatch({ type: "SET_LOADING" });
@@ -84,32 +95,16 @@ const QuizProvider = ({ children }: React.PropsWithChildren<{}>) => {
     })();
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        quizDispatch({ type: "SET_LOADING" });
-        const response = await answerApi.getAllOptions();
-        if ("data" in response) {
-          quizDispatch({
-            type: "INITIALIZE_OPTIONS",
-            payload: { options: response.data },
-          });
-        }
-      } catch (err) {
-        quizDispatch({ type: "INITIALIZE_OPTIONS", payload: { options: [] } });
-      } finally {
-        quizDispatch({ type: "SET_LOADING" });
-      }
-    })();
-  }, []);
-
-  const increaseScore = (points: number) =>
+  const storeUserAnswers = (ansObj: StoreUserAnswersProps) => {
     quizDispatch({
-      type: "INCREASE_SCORE",
-      payload: {
-        score: points,
-      },
+      type: "SET_SELECTED_OPTION",
+      payload: { ...ansObj },
     });
+  };
+
+  const clearUserAnswers = () => {
+    quizDispatch({ type: "CLEAR_SELECTED_OPTION" });
+  };
 
   const changeQuestionOnOptionClick = (currentQuestionNumber: number) => {
     quizDispatch({ type: "DISABLE_OPTIONS" });
@@ -131,13 +126,25 @@ const QuizProvider = ({ children }: React.PropsWithChildren<{}>) => {
     quizDispatch({ type: "RESET_COUNTDOWN" });
   };
 
+  const verifyUserAnswers = async (ansObj: UserAnswers) => {
+    try {
+      quizDispatch({ type: "SET_LOADING" });
+      const response = await verifyAnswers(ansObj);
+      return response;
+    } catch (err) {
+      showToast("Something went wrong!");
+    } finally {
+      quizDispatch({ type: "SET_LOADING" });
+    }
+  };
+
   const triggerCountDown = () => quizDispatch({ type: "TRIGGER_COUNTDOWN" });
 
   const resetQuiz = () => quizDispatch({ type: "RESET" });
 
   const resetCountDown = () => quizDispatch({ type: "RESET_COUNTDOWN" });
 
-  const setQuestionId = (questionId: string) =>
+  const setQuestionId = (questionId: string | undefined) =>
     quizDispatch({
       type: "SET_QUESTION_ID",
       payload: { id: questionId },
@@ -147,13 +154,15 @@ const QuizProvider = ({ children }: React.PropsWithChildren<{}>) => {
     <QuizContext.Provider
       value={{
         quizState,
-        increaseScore,
+        storeUserAnswers,
         changeQuestionOnOptionClick,
         changeQuestion,
         triggerCountDown,
         resetQuiz,
         resetCountDown,
         setQuestionId,
+        verifyUserAnswers,
+        clearUserAnswers,
       }}>
       {children}
     </QuizContext.Provider>

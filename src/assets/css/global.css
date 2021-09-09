@@ -31,9 +31,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--rq-black);
-  opacity: 0.6;
+  background-color: rgb(38, 38, 38, 0.6);
   color: var(--rq-light-gray);
+  z-index: 1035;
   font-size: 1.5rem;
   font-weight: bold;
   text-align: center;

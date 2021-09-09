@@ -1,12 +1,12 @@
 import axios, { AxiosError } from "axios";
 import { BASE_URL } from "../helper";
-import { Option } from "../../types/quiz.types";
+import { Quiz } from "../../types/quiz.types";
 
-const url = `${BASE_URL}/options`;
+const url = `${BASE_URL}/quizzes`;
 
 type ServerResponse = {
   status: string;
-  data: Option[];
+  data: Quiz[];
   message: string;
 };
 
@@ -15,7 +15,7 @@ type ServerError = {
   message: string;
 };
 
-const getAllOptions = async () => {
+const getAllQuiz = async () => {
   try {
     const { data } = await axios.get<ServerResponse>(url);
     return data;
@@ -33,4 +33,4 @@ const getAllOptions = async () => {
   }
 };
 
-export { getAllOptions };
+export { getAllQuiz };

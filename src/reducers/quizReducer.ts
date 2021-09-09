@@ -9,11 +9,8 @@ export const quizReducer = (
     case "INITIALIZE_CATEGORIES":
       return { ...state, categories: action.payload.categories };
 
-    case "INITIALIZE_QUESTIONS":
-      return { ...state, questions: action.payload.questions };
-
-    case "INITIALIZE_OPTIONS":
-      return { ...state, options: action.payload.options };
+    case "INITIALIZE_QUIZ":
+      return { ...state, quizzes: action.payload.quizzes };
 
     case "SET_LOADING":
       return { ...state, loading: !state.loading };
@@ -21,11 +18,23 @@ export const quizReducer = (
     case "SET_QUESTION_ID":
       return { ...state, questionId: action.payload.id };
 
-    case "INCREASE_SCORE":
+    case "SET_SELECTED_OPTION":
       return {
         ...state,
-        score: state.score + action.payload.score,
+        selectedOptions: {
+          categoryId: action.payload.categoryId,
+          answers: [
+            ...state.selectedOptions.answers,
+            {
+              questionId: action.payload.questionId,
+              optionId: action.payload.answerId,
+            },
+          ],
+        },
       };
+
+    case "CLEAR_SELECTED_OPTION":
+      return { ...state, selectedOptions: { categoryId: "", answers: [] } };
 
     case "CHANGE_QUESTION":
       return {
@@ -43,7 +52,7 @@ export const quizReducer = (
       return { ...state, counter: 30 };
 
     case "RESET":
-      return { ...state, score: 0, currentQuestionNumber: 1 };
+      return { ...state, currentQuestionNumber: 1 };
 
     default:
       return state;

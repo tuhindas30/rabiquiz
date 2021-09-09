@@ -1,23 +1,23 @@
 import axios, { AxiosError } from "axios";
 import { BASE_URL } from "../helper";
-import { Question } from "../../types/quiz.types";
+import { AnswerItem, UserAnswers } from "../../types/quiz.types";
 
-const url = `${BASE_URL}/questions`;
+const url = `${BASE_URL}/verify`;
 
-type ServerResponse = {
+export type ServerResponse = {
   status: string;
-  data: Question[];
+  data: { score: number; answers: AnswerItem[] };
   message: string;
 };
 
-type ServerError = {
+export type ServerError = {
   status: string;
   message: string;
 };
 
-const getAllQuestions = async () => {
+const verifyAnswers = async (answers: UserAnswers) => {
   try {
-    const { data } = await axios.get<ServerResponse>(url);
+    const { data } = await axios.post<ServerResponse>(url, answers);
     return data;
   } catch (err) {
     if (process.env.NODE_ENV === "development") {
@@ -33,4 +33,4 @@ const getAllQuestions = async () => {
   }
 };
 
-export { getAllQuestions };
+export { verifyAnswers };

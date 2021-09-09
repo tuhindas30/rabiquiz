@@ -12,11 +12,6 @@
   background-color: var(--rq-light-gray) !important;
 }
 
-.selectedOptionStyle {
-  border-color: var(--rq-black) !important;
-  background-color: var(--rq-amber) !important;
-}
-
 .correctOptionStyle {
   border-color: var(--rq-green) !important;
   background-color: var(--rq-green) !important;
@@ -28,17 +23,9 @@
   background-color: var(--rq-orange) !important;
 }
 
-.notAllowed {
-  cursor: not-allowed !important;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
 @media screen and (min-width: 768px) {
   .optionButton {
-    width: 50% !important;
+    width: 40% !important;
     margin: auto;
   }
 }

@@ -1,0 +1,59 @@
+.container {
+  margin: 5rem auto;
+  text-align: center;
+  font-size: 1.1rem;
+  min-height: 88vh;
+}
+
+.buttonContainer {
+  text-align: right;
+  width: 100%;
+}
+
+.button {
+  margin: 1rem 0;
+}
+
+.scoreContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score {
+  padding: 1rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.scoreButtonContainer {
+  width: 100%;
+  justify-content: space-around;
+  margin: 2rem auto;
+  display: flex;
+}
+
+.checkmark {
+  border-radius: 50%;
+  background-color: var(--rq-green);
+}
+
+@media screen and (min-width: 768px) {
+  .container {
+    max-width: 70% !important;
+  }
+
+  .question {
+    font-size: 1.5rem;
+  }
+
+  .optionButton {
+    width: 40% !important;
+    margin: auto;
+  }
+
+  .button {
+    font-size: 1.2rem !important;
+  }
+}

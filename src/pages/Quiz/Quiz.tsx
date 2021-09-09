@@ -1,29 +1,20 @@
 import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Container, Button } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { OptionItem } from "../../types/quiz.types";
 import { useQuiz } from "../../contexts/QuizProvider";
 import Option from "../../components/Option/Option";
-import showToast from "../../utils/showToast";
 import { ReactComponent as Loader } from "../../assets/images/Loader.svg";
 import { ReactComponent as EmptyQuizImage } from "../../assets/images/EmptyQuizImage.svg";
-import { ReactComponent as CheckmarkImage } from "../../assets/images/CheckmarkImage.svg";
 import styles from "./Quiz.module.css";
 
 const Quiz = () => {
-  const {
-    loading,
-    questions,
-    options,
-    currentQuestionNumber,
-    counter,
-    questionId,
-    score,
-  } = useQuiz().quizState;
+  const { loading, quizzes, currentQuestionNumber, counter } =
+    useQuiz().quizState;
 
   const {
-    increaseScore,
+    storeUserAnswers,
     changeQuestionOnOptionClick,
     changeQuestion,
     resetQuiz,
@@ -33,27 +24,16 @@ const Quiz = () => {
   } = useQuiz();
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const currentQuizQuestions = questions.find(
-    (question) => question.category === id
-  ) ?? { category: "", questions: [] };
+  const currentQuiz = quizzes.find((quiz) => quiz.category === id) ?? {
+    category: "",
+    quiz: [],
+  };
 
-  const currentQuizOptions = options.find(
-    (option) => option.category === id
-  ) ?? { category: "", items: [] };
+  const totalQuizQuestions = currentQuiz.quiz.length ?? 0;
 
-  const totalQuizQuestions = currentQuizQuestions.questions.length ?? 0;
-
-  const currentQuestion =
-    currentQuizQuestions.questions[currentQuestionNumber - 1];
-
-  const currentOptions = currentQuizOptions.items.find(
-    (item) => item?.question === questionId
-  );
-
-  const correctOption = currentOptions?.options.find(
-    (option) => option.isCorrect
-  )?.label;
+  const currentQuestion = currentQuiz.quiz[currentQuestionNumber - 1];
 
   useEffect(() => {
     resetCountDown();
@@ -68,48 +48,38 @@ const Quiz = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (counter === 0) {
-        return changeQuestion(currentQuestionNumber);
+        if (currentQuestionNumber === totalQuizQuestions) {
+          navigate(`/quizzes/${id}/results`);
+        }
+        changeQuestion(currentQuestionNumber);
+        return;
       }
-      return triggerCountDown();
+      triggerCountDown();
     }, 1000);
     return () => clearTimeout(timer);
   }, [currentQuestionNumber, counter]);
 
-  type OptionObj = {
-    currentQuestionNumber: number;
-    correctOption: string | undefined;
-    points: number;
-    option: OptionItem;
-  };
-
-  const handleOptionClick = (optionObj: OptionObj) => {
-    const { currentQuestionNumber, correctOption, points, option } = optionObj;
-    if (option.isCorrect) {
-      increaseScore(points);
-    } else {
-      showToast(`Correct option: ${correctOption}`);
+  const handleOptionClick = async (option: OptionItem) => {
+    storeUserAnswers({
+      categoryId: id,
+      questionId: currentQuestion._id,
+      answerId: option._id,
+    });
+    if (currentQuestionNumber === totalQuizQuestions) {
+      navigate(`/quizzes/${id}/results`);
     }
     changeQuestionOnOptionClick(currentQuestionNumber);
   };
 
-  const handlePlayAgainButton = () => {
-    resetQuiz();
-    resetCountDown();
-  };
-
   if (loading) {
     return (
-      <Container className={styles.header} style={{ height: "88vh" }}>
+      <Container className="overlay" style={{ height: "88vh" }}>
         <Loader />
       </Container>
     );
   }
 
-  if (
-    questions.length === 0 ||
-    options.length === 0 ||
-    totalQuizQuestions === 0
-  ) {
+  if (quizzes.length === 0) {
     return (
       <div className={styles.emptyQuizContainer}>
         <EmptyQuizImage width="80%" />
@@ -120,59 +90,37 @@ const Quiz = () => {
     );
   }
 
-  if (currentQuestionNumber <= totalQuizQuestions) {
-    return (
-      <Container className={styles.container}>
-        <ToastContainer />
-        <div className={styles.header}>
-          <div>
-            Question: {currentQuestionNumber}/{totalQuizQuestions}
-          </div>
-          <div>Timer: {counter}/30</div>
+  return (
+    <Container className={styles.container}>
+      <ToastContainer />
+      <div className={styles.header}>
+        <div>
+          Question: {currentQuestionNumber}/{totalQuizQuestions}
         </div>
-        <div className={styles.question}>{currentQuestion?.label}</div>
-        <div className={styles.optionContainer}>
-          {currentOptions?.options.map((option) => (
-            <Option
-              key={option._id}
-              option={option}
-              onOptionClick={() =>
-                handleOptionClick({
-                  currentQuestionNumber,
-                  correctOption,
-                  points: currentQuestion.points,
-                  option,
-                })
-              }
-            />
-          ))}
-        </div>
-        <div className={styles.buttonContainer}>
+        <div>Timer: {counter}/30</div>
+      </div>
+      <div className={styles.question}>{currentQuestion?.question}</div>
+      <div className={styles.optionContainer}>
+        {currentQuestion.options.map((option) => (
+          <Option
+            key={option._id}
+            option={option}
+            onOptionClick={handleOptionClick}
+          />
+        ))}
+      </div>
+      <div className={styles.buttonContainer}>
+        {currentQuestionNumber === totalQuizQuestions ? (
+          <Link to={`/quizzes/${id}/results`}>
+            <Button className="button">View Score</Button>
+          </Link>
+        ) : (
           <Button
             onClick={() => changeQuestion(currentQuestionNumber)}
             className="button">
-            {currentQuestionNumber === totalQuizQuestions
-              ? "View Score"
-              : "Skip"}
+            Skip
           </Button>
-        </div>
-      </Container>
-    );
-  }
-
-  return (
-    <Container className={`${styles.container} ${styles.scoreContainer}`}>
-      <CheckmarkImage className={styles.checkmark} />
-      <div className={styles.score}>Score: {score}</div>
-      <div className={styles.scoreButtonContainer}>
-        <Link to="/">
-          <Button className={`button ${styles.button}`}>Return to Home</Button>
-        </Link>
-        <Button
-          onClick={handlePlayAgainButton}
-          className={`button ${styles.button}`}>
-          Play again
-        </Button>
+        )}
       </div>
     </Container>
   );

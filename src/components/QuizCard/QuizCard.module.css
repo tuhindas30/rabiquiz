@@ -1,0 +1,17 @@
+.question {
+  padding: 1rem 0;
+}
+
+.optionContainer {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .question {
+    font-size: 1.5rem;
+  }
+}
