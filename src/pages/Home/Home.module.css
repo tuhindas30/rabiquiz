@@ -1,0 +1,26 @@
+.categoryContainer {
+  justify-content: space-around;
+  margin: 0;
+}
+
+.message {
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+}
+
+.emptyCategoryContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+  text-align: center;
+  height: 48vh;
+}
+
+@media screen and (min-width: 768px) {
+  .categoryContainer {
+    margin: 5rem 0;
+  }
+}
